@@ -1,0 +1,1357 @@
+<?xml version="1.0" encoding="UTF-8"?><TestSessionContainer xmlns="http://www.codecover.org/xml/testsession-container" Date="1417046337183" TestSessionContainerId="37915833-f6cc-4bb1-a2d5-bac431c4c5a5" version="1.0">
+<SrcFileList>
+<SrcFile Content="package com.mloftus.mastermind;&#13;&#10;&#13;&#10;public class MastermindMessages {&#13;&#10;&#13;&#10;&#9;public static void printUsageMessage() {&#13;&#10;&#9;&#9;System.out.println(&quot;Usage:  java MastermindGame &lt;codeLength&gt;&quot;);&#13;&#10;&#9;&#9;System.out.println(&quot;Valid code lengths are numbers from 3 to 6&quot;);&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;public static void printWelcomeMessage(Integer codeLength, Integer maxGuesses) {&#13;&#10;&#9;&#9;System.out.println(&quot;Welcome to Mastermind.&quot;);&#13;&#10;&#9;&#9;System.out.println(String.format(&quot;Your secret code is %s digits in length.  You have %s guesses.  Good luck!\n&quot;, codeLength, maxGuesses));&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public static void printGuessHelpStatement(Integer codeLength) {&#13;&#10;&#9;&#9;System.out.println(String.format(&quot;Your guess must be a %s digit number with no duplicate digits.&quot;, codeLength));&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public static void printWinningStatement(Integer numberOfGuesses, String gameCode) {&#13;&#10;&#9;&#9;System.out.println(String.format(&quot;You win!!  %s guesses.  Code is: %s&quot;, numberOfGuesses, gameCode));&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public static void printGuessResultStatement(Integer digitMatches, Integer LocationMatches) {&#13;&#10;&#9;&#9;System.out.println(String.format(&quot;%s correct digits.  %s correct locations.\n&quot;, digitMatches, LocationMatches));&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public static void printGameOverStatement(String gameCode) {&#13;&#10;&#9;&#9;System.out.println(String.format(&quot;Out of guesses.  Game over.  Code is %s&quot;, gameCode));&#13;&#10;&#9;}&#13;&#10;}&#13;&#10;" Filename="MastermindMessages.java" Intrnl_Id="1"/>
+<SrcFile Content="package com.mloftus.mastermind;&#13;&#10;&#13;&#10;import java.util.*;&#13;&#10;&#13;&#10;public class MastermindLogic {&#13;&#10;&#13;&#10;&#9;private List&lt;Integer&gt; code;&#13;&#10;&#9;private List&lt;Integer&gt; guess;&#13;&#10;&#9;private MastermindGuessValidator guessValidator;&#13;&#10;&#9;&#13;&#10;&#9;public MastermindLogic() {&#13;&#10;&#9;&#9;&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;public MastermindLogic(Integer codeLength) {&#13;&#10;&#9;&#9;generateCode(codeLength);&#13;&#10;&#9;&#9;guessValidator = new MastermindGuessValidator(codeLength);&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public void generateCode(int codeLength) {&#13;&#10;&#9;&#9;this.code = new ArrayList&lt;Integer&gt;(codeLength);&#13;&#10;&#9;&#9;while (this.code.size() &lt; codeLength){&#13;&#10;&#9;&#9;&#9;Random random = new Random();&#13;&#10;&#9;&#9;&#9;int randomNumber = random.nextInt(9 - 1) + 1;&#13;&#10;&#9;&#9;&#9;if (! this.code.contains(randomNumber)) {&#13;&#10;&#9;&#9;&#9;&#9;this.code.add(randomNumber);&#13;&#10;&#9;&#9;&#9;}&#13;&#10;&#9;&#9;}&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public void setCode(String code) {&#13;&#10;&#9;&#9;this.code = convertStringToArrayList(code);&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public boolean guessIsValid(String guess) {&#13;&#10;&#9;&#9;return guessValidator.guessIsValid(guess);&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public boolean guessMatchesCode(String myGuess) {&#13;&#10;&#9;&#9;this.guess = convertStringToArrayList(myGuess);&#13;&#10;&#9;&#9;return (getDigitMatches() == code.size() &amp;&amp; getLocationMatches() == code.size());&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;private List&lt;Integer&gt; convertStringToArrayList(String inString) {&#13;&#10;&#9;&#9;List&lt;Integer&gt; result = new ArrayList&lt;Integer&gt;(inString.length());&#13;&#10;&#9;&#9;for (int i=0;i&lt;inString.length();i++){&#13;&#10;&#9;&#9;&#9;result.add(Integer.parseInt(inString.substring(i, i+1)));&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;return result;&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;public String getCode() {&#13;&#10;&#9;&#9;return String.format(&quot;%s%s%s%s&quot;, code.toArray());&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public int getDigitMatches() {&#13;&#10;&#9;&#9;int matches = 0;&#13;&#10;&#9;&#9;for (Integer codeDigit : code) {&#13;&#10;&#9;&#9;&#9;for (Integer guessDigit : guess) {&#13;&#10;&#9;&#9;&#9;&#9;if (codeDigit == guessDigit)&#13;&#10;&#9;&#9;&#9;&#9;&#9;matches++;&#13;&#10;&#9;&#9;&#9;}&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;return matches;&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public int getLocationMatches() {&#13;&#10;&#9;&#9;int matches = 0;&#13;&#10;&#9;&#9;for (int i=0;i&lt;code.size();i++) {&#13;&#10;&#9;&#9;&#9;if(guess.get(i) == code.get(i))&#13;&#10;&#9;&#9;&#9;&#9;matches++;&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;return matches;&#13;&#10;&#9;}&#13;&#10;&#13;&#10;}&#13;&#10;" Filename="MastermindLogic.java" Intrnl_Id="2"/>
+<SrcFile Content="package com.mloftus.mastermind;&#13;&#10;&#13;&#10;public class MastermindGuessValidator {&#13;&#10;&#9;&#13;&#10;&#9;private int codeLength;&#13;&#10;&#13;&#10;&#9;public MastermindGuessValidator(int codeLength) {&#13;&#10;&#9;&#9;this.codeLength = codeLength;&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public boolean guessIsValid(String guess) {&#13;&#10;&#9;&#9;return lengthIsCorrect(guess, codeLength) &amp;&amp; isNumeric(guess) &amp;&amp; hasNoRepeatDigits(guess);&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;private boolean lengthIsCorrect(String guess, int codeLength) {&#13;&#10;&#9;&#9;return guess.length() == codeLength;&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;private boolean isNumeric(String guess) {&#13;&#10;&#9;&#9;char[] guessChars = guess.toCharArray();&#13;&#10;&#9;&#9;for(char digitChar : guessChars){&#13;&#10;&#9;&#9;&#9;try {&#13;&#10;&#9;&#9;&#9;&#9;Integer.parseInt(String.valueOf(digitChar));&#13;&#10;&#9;&#9;&#9;} catch (NumberFormatException e) {&#13;&#10;&#9;&#9;&#9;&#9;return false;&#13;&#10;&#9;&#9;&#9;}&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;return true;&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;private boolean hasNoRepeatDigits(String guess) {&#13;&#10;&#9;&#9;char[] charsInGuess = guess.toCharArray();&#13;&#10;&#9;&#9;char[] checkedChars = new char[guess.length()];&#13;&#10;&#9;&#9;for (int i=0;i&lt;charsInGuess.length;i++){&#13;&#10;&#9;&#9;&#9;for (char checked : checkedChars) {&#13;&#10;&#9;&#9;&#9;&#9;if (checked == charsInGuess[i])&#13;&#10;&#9;&#9;&#9;&#9;&#9;return false;&#13;&#10;&#9;&#9;&#9;}&#13;&#10;&#9;&#9;&#9;checkedChars[i] = charsInGuess[i];&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;return true;&#13;&#10;&#9;}&#13;&#10;&#13;&#10;}&#13;&#10;" Filename="MastermindGuessValidator.java" Intrnl_Id="3"/>
+<SrcFile Content="package com.mloftus.mastermind;&#13;&#10;&#13;&#10;import java.io.BufferedReader;&#13;&#10;import java.io.IOException;&#13;&#10;import java.io.InputStreamReader;&#13;&#10;&#13;&#10;import javax.naming.ConfigurationException;&#13;&#10;&#13;&#10;public class MastermindGame {&#13;&#10;&#13;&#10;&#9;private Integer codeLength = 4;&#13;&#10;&#9;private Integer maxGuesses = 10;&#13;&#10;&#9;private MastermindLogic game;&#13;&#10;&#9;private Integer numberOfGuesses = 0;&#13;&#10;&#9;private MastermindMessages messages;&#13;&#10;&#9;&#13;&#10;&#9;public MastermindGame(int codeLength) {&#13;&#10;&#9;&#9;this.codeLength = codeLength;&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public void play() throws ConfigurationException {&#13;&#10;&#13;&#10;&#9;&#9;configureGame();&#13;&#10;&#9;&#9;&#13;&#10;&#9;&#9;messages.printWelcomeMessage(codeLength, maxGuesses);&#13;&#10;&#9;&#9;&#13;&#10;&#9;&#9;while (someGuessesRemain()) {&#13;&#10;&#9;&#9;&#9;askForNextGuess();&#13;&#10;&#9;&#9;&#9;String guess = getGuess();&#13;&#10;&#9;&#9;&#9;if (guessNotValid(guess)) {&#13;&#10;&#9;&#9;&#9;&#9;messages.printGuessHelpStatement(codeLength);&#13;&#10;&#9;&#9;&#9;&#9;continue;&#13;&#10;&#9;&#9;&#9;}&#13;&#10;&#9;&#9;&#9;numberOfGuesses++;&#13;&#10;&#9;&#9;&#9;if (isWinningGuess(guess)) {&#13;&#10;&#9;&#9;&#9;&#9;messages.printWinningStatement(numberOfGuesses, game.getCode());&#13;&#10;&#9;&#9;&#9;&#9;break;&#13;&#10;&#9;&#9;&#9;} else {&#13;&#10;&#9;&#9;&#9;&#9;messages.printGuessResultStatement(game.getDigitMatches(), game.getLocationMatches());&#13;&#10;&#9;&#9;&#9;}&#13;&#10;&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;if (ranOutOfGuesses()) {&#13;&#10;&#9;&#9;&#9;messages.printGameOverStatement(game.getCode());&#13;&#10;&#9;&#9;}&#13;&#10;&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;private void configureGame() throws ConfigurationException {&#13;&#10;&#9;&#9;if (codeLength &lt; 3 || codeLength &gt; 6) {&#13;&#10;&#9;&#9;&#9;throw new ConfigurationException(&quot;Code length not valid.&quot;);&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;if (codeLength &gt; 4) {&#13;&#10;&#9;&#9;&#9;maxGuesses = 15;&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;game = new MastermindLogic(codeLength);&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;private boolean someGuessesRemain() {&#13;&#10;&#9;&#9;return numberOfGuesses  &lt; maxGuesses;&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;private void askForNextGuess() {&#13;&#10;&#9;&#9;System.out.print(String.format(&quot;Your guess? (%s left):&quot;, (maxGuesses - numberOfGuesses)));&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;private String getGuess() {&#13;&#10;&#9;&#9;BufferedReader br = new BufferedReader(new InputStreamReader(System.in));&#13;&#10;&#9;&#9;String guess = null;&#13;&#10;&#9;&#9;try {&#13;&#10;&#9;&#9;&#9;guess = br.readLine();&#13;&#10;&#9;&#9;} catch (IOException e) {&#13;&#10;&#9;&#9;&#9;e.printStackTrace();&#13;&#10;&#9;&#9;}&#13;&#10;&#9;&#9;return guess;&#13;&#10;&#9;}&#13;&#10;&#9;&#13;&#10;&#9;private boolean guessNotValid(String guess) {&#13;&#10;&#9;&#9;return ! game.guessIsValid(guess);&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;private boolean isWinningGuess(String guess) {&#13;&#10;&#9;&#9;return game.guessMatchesCode(guess);&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;private boolean ranOutOfGuesses() {&#13;&#10;&#9;&#9;return ! someGuessesRemain();&#13;&#10;&#9;}&#13;&#10;&#13;&#10;&#9;public static void printUsageMessage() {&#13;&#10;&#9;&#9;MastermindMessages.printUsageMessage();&#13;&#10;&#9;}&#13;&#10;&#13;&#10;}&#13;&#10;" Filename="MastermindGame.java" Intrnl_Id="4"/>
+</SrcFileList>
+<CritList>
+<CritListEntry Name="org.codecover.model.utils.criteria.LoopCoverage" PluginName="org.codecover"/>
+<CritListEntry Name="org.codecover.model.utils.criteria.QMOCoverage" PluginName="org.codecover"/>
+<CritListEntry Name="org.codecover.model.utils.criteria.ConditionCoverage" PluginName="org.codecover"/>
+<CritListEntry Name="org.codecover.model.utils.criteria.BranchCoverage" PluginName="org.codecover"/>
+<CritListEntry Name="org.codecover.model.utils.criteria.StatementCoverage" PluginName="org.codecover"/>
+</CritList>
+<BoolOpList>
+<BoolOp Arity="2" Intrnl_Id="5" Name="conditional or (||)">
+<BoolAssgnmntBoolMapList>
+<MapEntry BoolAssgnmnt="00" Value="false"/>
+<MapEntry BoolAssgnmnt="01" Value="true"/>
+<MapEntry BoolAssgnmnt="12" Value="true"/>
+</BoolAssgnmntBoolMapList>
+</BoolOp>
+<BoolOp Arity="1" Intrnl_Id="6" Name="not (!)">
+<BoolAssgnmntBoolMapList>
+<MapEntry BoolAssgnmnt="1" Value="false"/>
+<MapEntry BoolAssgnmnt="0" Value="true"/>
+</BoolAssgnmntBoolMapList>
+</BoolOp>
+</BoolOpList>
+<HierarchyLvlTypeList>
+<HierarchyLvlType EnglishName="package" IntrnlName="package" Intrnl_Id="7"/>
+<HierarchyLvlType EnglishName="method" IntrnlName="method" Intrnl_Id="8"/>
+<HierarchyLvlType EnglishName="class" IntrnlName="class" Intrnl_Id="9"/>
+<HierarchyLvlType EnglishName="default package" IntrnlName="default package" Intrnl_Id="10"/>
+</HierarchyLvlTypeList>
+<MASTRoot>
+<HierarchyLvl HierarchyLvlId="343" HierarchyLvlTypeId="10" Intrnl_Id="11" Name="default package">
+<Header/>
+<LocList/>
+<HierarchyLvl HierarchyLvlId="342" HierarchyLvlTypeId="7" Intrnl_Id="12" Name="com">
+<Header/>
+<LocList/>
+<HierarchyLvl HierarchyLvlId="341" HierarchyLvlTypeId="7" Intrnl_Id="13" Name="mloftus">
+<Header/>
+<LocList/>
+<HierarchyLvl HierarchyLvlId="340" HierarchyLvlTypeId="7" Intrnl_Id="14" Name="mastermind">
+<Header/>
+<LocList/>
+<HierarchyLvl HierarchyLvlId="311" HierarchyLvlTypeId="9" Intrnl_Id="15" Name="MastermindMessages">
+<Header>
+<Loc EndOffset="66" SrcFileId="1" StartOffset="35"/>
+</Header>
+<LocList>
+<Loc EndOffset="1301" SrcFileId="1" StartOffset="35"/>
+</LocList>
+<HierarchyLvl HierarchyLvlId="305" HierarchyLvlTypeId="8" Intrnl_Id="16" Name="printUsageMessage">
+<Header>
+<Loc EndOffset="111" SrcFileId="1" StartOffset="73"/>
+</Header>
+<LocList>
+<Loc EndOffset="253" SrcFileId="1" StartOffset="73"/>
+</LocList>
+<StmntSeq Intrnl_Id="17">
+<LocList>
+<Loc EndOffset="180" SrcFileId="1" StartOffset="117"/>
+<Loc EndOffset="249" SrcFileId="1" StartOffset="184"/>
+</LocList>
+<BasicStmnt CovItemId="S1" CovItemPrefix="com.mloftus.mastermind.MastermindMessages.java" Intrnl_Id="18">
+<LocList>
+<Loc EndOffset="180" SrcFileId="1" StartOffset="117"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S2" CovItemPrefix="com.mloftus.mastermind.MastermindMessages.java" Intrnl_Id="19">
+<LocList>
+<Loc EndOffset="249" SrcFileId="1" StartOffset="184"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="306" HierarchyLvlTypeId="8" Intrnl_Id="20" Name="printWelcomeMessage">
+<Header>
+<Loc EndOffset="337" SrcFileId="1" StartOffset="259"/>
+</Header>
+<LocList>
+<Loc EndOffset="534" SrcFileId="1" StartOffset="259"/>
+</LocList>
+<StmntSeq Intrnl_Id="21">
+<LocList>
+<Loc EndOffset="388" SrcFileId="1" StartOffset="343"/>
+<Loc EndOffset="530" SrcFileId="1" StartOffset="392"/>
+</LocList>
+<BasicStmnt CovItemId="S3" CovItemPrefix="com.mloftus.mastermind.MastermindMessages.java" Intrnl_Id="22">
+<LocList>
+<Loc EndOffset="388" SrcFileId="1" StartOffset="343"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S4" CovItemPrefix="com.mloftus.mastermind.MastermindMessages.java" Intrnl_Id="23">
+<LocList>
+<Loc EndOffset="530" SrcFileId="1" StartOffset="392"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="307" HierarchyLvlTypeId="8" Intrnl_Id="24" Name="printGuessHelpStatement">
+<Header>
+<Loc EndOffset="601" SrcFileId="1" StartOffset="539"/>
+</Header>
+<LocList>
+<Loc EndOffset="723" SrcFileId="1" StartOffset="539"/>
+</LocList>
+<StmntSeq Intrnl_Id="25">
+<LocList>
+<Loc EndOffset="719" SrcFileId="1" StartOffset="607"/>
+</LocList>
+<BasicStmnt CovItemId="S5" CovItemPrefix="com.mloftus.mastermind.MastermindMessages.java" Intrnl_Id="26">
+<LocList>
+<Loc EndOffset="719" SrcFileId="1" StartOffset="607"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="308" HierarchyLvlTypeId="8" Intrnl_Id="27" Name="printWinningStatement">
+<Header>
+<Loc EndOffset="810" SrcFileId="1" StartOffset="728"/>
+</Header>
+<LocList>
+<Loc EndOffset="920" SrcFileId="1" StartOffset="728"/>
+</LocList>
+<StmntSeq Intrnl_Id="28">
+<LocList>
+<Loc EndOffset="916" SrcFileId="1" StartOffset="816"/>
+</LocList>
+<BasicStmnt CovItemId="S6" CovItemPrefix="com.mloftus.mastermind.MastermindMessages.java" Intrnl_Id="29">
+<LocList>
+<Loc EndOffset="916" SrcFileId="1" StartOffset="816"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="309" HierarchyLvlTypeId="8" Intrnl_Id="30" Name="printGuessResultStatement">
+<Header>
+<Loc EndOffset="1016" SrcFileId="1" StartOffset="925"/>
+</Header>
+<LocList>
+<Loc EndOffset="1138" SrcFileId="1" StartOffset="925"/>
+</LocList>
+<StmntSeq Intrnl_Id="31">
+<LocList>
+<Loc EndOffset="1134" SrcFileId="1" StartOffset="1022"/>
+</LocList>
+<BasicStmnt CovItemId="S7" CovItemPrefix="com.mloftus.mastermind.MastermindMessages.java" Intrnl_Id="32">
+<LocList>
+<Loc EndOffset="1134" SrcFileId="1" StartOffset="1022"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="310" HierarchyLvlTypeId="8" Intrnl_Id="33" Name="printGameOverStatement">
+<Header>
+<Loc EndOffset="1201" SrcFileId="1" StartOffset="1143"/>
+</Header>
+<LocList>
+<Loc EndOffset="1298" SrcFileId="1" StartOffset="1143"/>
+</LocList>
+<StmntSeq Intrnl_Id="34">
+<LocList>
+<Loc EndOffset="1294" SrcFileId="1" StartOffset="1207"/>
+</LocList>
+<BasicStmnt CovItemId="S8" CovItemPrefix="com.mloftus.mastermind.MastermindMessages.java" Intrnl_Id="35">
+<LocList>
+<Loc EndOffset="1294" SrcFileId="1" StartOffset="1207"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="322" HierarchyLvlTypeId="9" Intrnl_Id="36" Name="MastermindLogic">
+<Header>
+<Loc EndOffset="86" SrcFileId="2" StartOffset="58"/>
+</Header>
+<LocList>
+<Loc EndOffset="1841" SrcFileId="2" StartOffset="58"/>
+</LocList>
+<HierarchyLvl HierarchyLvlId="312" HierarchyLvlTypeId="8" Intrnl_Id="37" Name="MastermindLogic">
+<Header>
+<Loc EndOffset="232" SrcFileId="2" StartOffset="208"/>
+</Header>
+<LocList>
+<Loc EndOffset="242" SrcFileId="2" StartOffset="208"/>
+</LocList>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="313" HierarchyLvlTypeId="8" Intrnl_Id="38" Name="MastermindLogic">
+<Header>
+<Loc EndOffset="290" SrcFileId="2" StartOffset="248"/>
+</Header>
+<LocList>
+<Loc EndOffset="387" SrcFileId="2" StartOffset="248"/>
+</LocList>
+<StmntSeq Intrnl_Id="39">
+<LocList>
+<Loc EndOffset="321" SrcFileId="2" StartOffset="296"/>
+<Loc EndOffset="383" SrcFileId="2" StartOffset="325"/>
+</LocList>
+<BasicStmnt CovItemId="S1" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="40">
+<LocList>
+<Loc EndOffset="321" SrcFileId="2" StartOffset="296"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S2" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="41">
+<LocList>
+<Loc EndOffset="383" SrcFileId="2" StartOffset="325"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="314" HierarchyLvlTypeId="8" Intrnl_Id="42" Name="generateCode">
+<Header>
+<Loc EndOffset="432" SrcFileId="2" StartOffset="392"/>
+</Header>
+<LocList>
+<Loc EndOffset="706" SrcFileId="2" StartOffset="392"/>
+</LocList>
+<StmntSeq Intrnl_Id="43">
+<LocList>
+<Loc EndOffset="485" SrcFileId="2" StartOffset="438"/>
+<Loc EndOffset="702" SrcFileId="2" StartOffset="489"/>
+</LocList>
+<BasicStmnt CovItemId="S3" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="44">
+<LocList>
+<Loc EndOffset="485" SrcFileId="2" StartOffset="438"/>
+</LocList>
+</BasicStmnt>
+<LoopStmnt CovItemId="S4" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="45" MltplExecId="L1-2" MltplExecPrefix="com.mloftus.mastermind.MastermindLogic.java" NvrExecId="L1-0" NvrExecPrefix="com.mloftus.mastermind.MastermindLogic.java" OnceExecutedId="L1-1" OnceExecutedPrefix="com.mloftus.mastermind.MastermindLogic.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="46">
+<LocList>
+<Loc EndOffset="561" SrcFileId="2" StartOffset="532"/>
+<Loc EndOffset="611" SrcFileId="2" StartOffset="566"/>
+<Loc EndOffset="697" SrcFileId="2" StartOffset="616"/>
+</LocList>
+<BasicStmnt CovItemId="S5" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="47">
+<LocList>
+<Loc EndOffset="561" SrcFileId="2" StartOffset="532"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S6" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="48">
+<LocList>
+<Loc EndOffset="611" SrcFileId="2" StartOffset="566"/>
+</LocList>
+</BasicStmnt>
+<CondStmnt CovItemId="S7" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="49">
+<Branch CovItemId="B1" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Implct="false" Intrnl_Id="50">
+<Cond/>
+<LocList>
+<Loc EndOffset="697" SrcFileId="2" StartOffset="656"/>
+</LocList>
+<StmntSeq Intrnl_Id="51">
+<LocList>
+<Loc EndOffset="691" SrcFileId="2" StartOffset="663"/>
+</LocList>
+<BasicStmnt CovItemId="S8" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="52">
+<LocList>
+<Loc EndOffset="691" SrcFileId="2" StartOffset="663"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B2" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Implct="true" Intrnl_Id="53">
+<Cond/>
+<LocList/>
+<StmntSeq Intrnl_Id="54">
+<LocList/>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="618" SrcFileId="2" StartOffset="616"/>
+<LocList>
+<Loc EndOffset="697" SrcFileId="2" StartOffset="616"/>
+</LocList>
+<RootTerm CovItemId="C2" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="55">
+<OpTerm BooleanOpId="6" Intrnl_Id="56">
+<BasicBoolTerm Intrnl_Id="57">
+<LocList>
+<Loc EndOffset="654" SrcFileId="2" StartOffset="622"/>
+</LocList>
+</BasicBoolTerm>
+<LocList>
+<Loc EndOffset="621" SrcFileId="2" StartOffset="620"/>
+</LocList>
+</OpTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+<Keyword EndOffset="494" SrcFileId="2" StartOffset="489"/>
+<LocList>
+<Loc EndOffset="702" SrcFileId="2" StartOffset="489"/>
+</LocList>
+<RootTerm CovItemId="C1" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="58">
+<BasicBoolTerm Intrnl_Id="59">
+<LocList>
+<Loc EndOffset="525" SrcFileId="2" StartOffset="496"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</LoopStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="315" HierarchyLvlTypeId="8" Intrnl_Id="60" Name="setCode">
+<Header>
+<Loc EndOffset="743" SrcFileId="2" StartOffset="711"/>
+</Header>
+<LocList>
+<Loc EndOffset="796" SrcFileId="2" StartOffset="711"/>
+</LocList>
+<StmntSeq Intrnl_Id="61">
+<LocList>
+<Loc EndOffset="792" SrcFileId="2" StartOffset="749"/>
+</LocList>
+<BasicStmnt CovItemId="S9" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="62">
+<LocList>
+<Loc EndOffset="792" SrcFileId="2" StartOffset="749"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="316" HierarchyLvlTypeId="8" Intrnl_Id="63" Name="guessIsValid">
+<Header>
+<Loc EndOffset="842" SrcFileId="2" StartOffset="801"/>
+</Header>
+<LocList>
+<Loc EndOffset="894" SrcFileId="2" StartOffset="801"/>
+</LocList>
+<StmntSeq Intrnl_Id="64">
+<LocList>
+<Loc EndOffset="890" SrcFileId="2" StartOffset="848"/>
+</LocList>
+<BasicStmnt CovItemId="S10" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="65">
+<LocList>
+<Loc EndOffset="890" SrcFileId="2" StartOffset="848"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="317" HierarchyLvlTypeId="8" Intrnl_Id="66" Name="guessMatchesCode">
+<Header>
+<Loc EndOffset="946" SrcFileId="2" StartOffset="899"/>
+</Header>
+<LocList>
+<Loc EndOffset="1088" SrcFileId="2" StartOffset="899"/>
+</LocList>
+<StmntSeq Intrnl_Id="67">
+<LocList>
+<Loc EndOffset="999" SrcFileId="2" StartOffset="952"/>
+<Loc EndOffset="1084" SrcFileId="2" StartOffset="1003"/>
+</LocList>
+<BasicStmnt CovItemId="S11" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="68">
+<LocList>
+<Loc EndOffset="999" SrcFileId="2" StartOffset="952"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S12" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="69">
+<LocList>
+<Loc EndOffset="1084" SrcFileId="2" StartOffset="1003"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="318" HierarchyLvlTypeId="8" Intrnl_Id="70" Name="convertStringToArrayList">
+<Header>
+<Loc EndOffset="1156" SrcFileId="2" StartOffset="1093"/>
+</Header>
+<LocList>
+<Loc EndOffset="1358" SrcFileId="2" StartOffset="1093"/>
+</LocList>
+<StmntSeq Intrnl_Id="71">
+<LocList>
+<Loc EndOffset="1227" SrcFileId="2" StartOffset="1162"/>
+<Loc EndOffset="1336" SrcFileId="2" StartOffset="1231"/>
+<Loc EndOffset="1354" SrcFileId="2" StartOffset="1340"/>
+</LocList>
+<BasicStmnt CovItemId="S13" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="72">
+<LocList>
+<Loc EndOffset="1227" SrcFileId="2" StartOffset="1162"/>
+</LocList>
+</BasicStmnt>
+<LoopStmnt CovItemId="S14" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="73" MltplExecId="L2-2" MltplExecPrefix="com.mloftus.mastermind.MastermindLogic.java" NvrExecId="L2-0" NvrExecPrefix="com.mloftus.mastermind.MastermindLogic.java" OnceExecutedId="L2-1" OnceExecutedPrefix="com.mloftus.mastermind.MastermindLogic.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="74">
+<LocList>
+<Loc EndOffset="1331" SrcFileId="2" StartOffset="1274"/>
+</LocList>
+<BasicStmnt CovItemId="S15" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="75">
+<LocList>
+<Loc EndOffset="1331" SrcFileId="2" StartOffset="1274"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+<Keyword EndOffset="1234" SrcFileId="2" StartOffset="1231"/>
+<LocList>
+<Loc EndOffset="1336" SrcFileId="2" StartOffset="1231"/>
+</LocList>
+<RootTerm CovItemId="C3" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="76">
+<BasicBoolTerm Intrnl_Id="77">
+<LocList>
+<Loc EndOffset="1263" SrcFileId="2" StartOffset="1244"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</LoopStmnt>
+<BasicStmnt CovItemId="S16" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="78">
+<LocList>
+<Loc EndOffset="1354" SrcFileId="2" StartOffset="1340"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="319" HierarchyLvlTypeId="8" Intrnl_Id="79" Name="getCode">
+<Header>
+<Loc EndOffset="1387" SrcFileId="2" StartOffset="1364"/>
+</Header>
+<LocList>
+<Loc EndOffset="1446" SrcFileId="2" StartOffset="1364"/>
+</LocList>
+<StmntSeq Intrnl_Id="80">
+<LocList>
+<Loc EndOffset="1442" SrcFileId="2" StartOffset="1393"/>
+</LocList>
+<BasicStmnt CovItemId="S17" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="81">
+<LocList>
+<Loc EndOffset="1442" SrcFileId="2" StartOffset="1393"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="320" HierarchyLvlTypeId="8" Intrnl_Id="82" Name="getDigitMatches">
+<Header>
+<Loc EndOffset="1479" SrcFileId="2" StartOffset="1451"/>
+</Header>
+<LocList>
+<Loc EndOffset="1661" SrcFileId="2" StartOffset="1451"/>
+</LocList>
+<StmntSeq Intrnl_Id="83">
+<LocList>
+<Loc EndOffset="1501" SrcFileId="2" StartOffset="1485"/>
+<Loc EndOffset="1638" SrcFileId="2" StartOffset="1505"/>
+<Loc EndOffset="1657" SrcFileId="2" StartOffset="1642"/>
+</LocList>
+<BasicStmnt CovItemId="S18" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="84">
+<LocList>
+<Loc EndOffset="1501" SrcFileId="2" StartOffset="1485"/>
+</LocList>
+</BasicStmnt>
+<LoopStmnt CovItemId="S19" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="85" MltplExecId="L3-2" MltplExecPrefix="com.mloftus.mastermind.MastermindLogic.java" NvrExecId="L3-0" NvrExecPrefix="com.mloftus.mastermind.MastermindLogic.java" OnceExecutedId="L3-1" OnceExecutedPrefix="com.mloftus.mastermind.MastermindLogic.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="86">
+<LocList>
+<Loc EndOffset="1633" SrcFileId="2" StartOffset="1542"/>
+</LocList>
+<LoopStmnt CovItemId="S20" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="87" MltplExecId="L4-2" MltplExecPrefix="com.mloftus.mastermind.MastermindLogic.java" NvrExecId="L4-0" NvrExecPrefix="com.mloftus.mastermind.MastermindLogic.java" OnceExecutedId="L4-1" OnceExecutedPrefix="com.mloftus.mastermind.MastermindLogic.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="88">
+<LocList>
+<Loc EndOffset="1627" SrcFileId="2" StartOffset="1582"/>
+</LocList>
+<CondStmnt CovItemId="S21" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="89">
+<Branch CovItemId="B3" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Implct="false" Intrnl_Id="90">
+<Cond/>
+<LocList>
+<Loc EndOffset="1627" SrcFileId="2" StartOffset="1617"/>
+</LocList>
+<StmntSeq Intrnl_Id="91">
+<LocList>
+<Loc EndOffset="1627" SrcFileId="2" StartOffset="1617"/>
+</LocList>
+<BasicStmnt CovItemId="S22" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="92">
+<LocList>
+<Loc EndOffset="1627" SrcFileId="2" StartOffset="1617"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B4" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Implct="true" Intrnl_Id="93">
+<Cond/>
+<LocList/>
+<StmntSeq Intrnl_Id="94">
+<LocList/>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="1584" SrcFileId="2" StartOffset="1582"/>
+<LocList>
+<Loc EndOffset="1627" SrcFileId="2" StartOffset="1582"/>
+</LocList>
+<RootTerm CovItemId="C4" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="95">
+<BasicBoolTerm Intrnl_Id="96">
+<LocList>
+<Loc EndOffset="1609" SrcFileId="2" StartOffset="1586"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+<Keyword EndOffset="1545" SrcFileId="2" StartOffset="1542"/>
+<LocList>
+<Loc EndOffset="1633" SrcFileId="2" StartOffset="1542"/>
+</LocList>
+</LoopStmnt>
+</StmntSeq>
+<Keyword EndOffset="1508" SrcFileId="2" StartOffset="1505"/>
+<LocList>
+<Loc EndOffset="1638" SrcFileId="2" StartOffset="1505"/>
+</LocList>
+</LoopStmnt>
+<BasicStmnt CovItemId="S23" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="97">
+<LocList>
+<Loc EndOffset="1657" SrcFileId="2" StartOffset="1642"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="321" HierarchyLvlTypeId="8" Intrnl_Id="98" Name="getLocationMatches">
+<Header>
+<Loc EndOffset="1697" SrcFileId="2" StartOffset="1666"/>
+</Header>
+<LocList>
+<Loc EndOffset="1836" SrcFileId="2" StartOffset="1666"/>
+</LocList>
+<StmntSeq Intrnl_Id="99">
+<LocList>
+<Loc EndOffset="1719" SrcFileId="2" StartOffset="1703"/>
+<Loc EndOffset="1813" SrcFileId="2" StartOffset="1723"/>
+<Loc EndOffset="1832" SrcFileId="2" StartOffset="1817"/>
+</LocList>
+<BasicStmnt CovItemId="S24" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="100">
+<LocList>
+<Loc EndOffset="1719" SrcFileId="2" StartOffset="1703"/>
+</LocList>
+</BasicStmnt>
+<LoopStmnt CovItemId="S25" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="101" MltplExecId="L5-2" MltplExecPrefix="com.mloftus.mastermind.MastermindLogic.java" NvrExecId="L5-0" NvrExecPrefix="com.mloftus.mastermind.MastermindLogic.java" OnceExecutedId="L5-1" OnceExecutedPrefix="com.mloftus.mastermind.MastermindLogic.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="102">
+<LocList>
+<Loc EndOffset="1808" SrcFileId="2" StartOffset="1761"/>
+</LocList>
+<CondStmnt CovItemId="S26" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="103">
+<Branch CovItemId="B5" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Implct="false" Intrnl_Id="104">
+<Cond/>
+<LocList>
+<Loc EndOffset="1808" SrcFileId="2" StartOffset="1798"/>
+</LocList>
+<StmntSeq Intrnl_Id="105">
+<LocList>
+<Loc EndOffset="1808" SrcFileId="2" StartOffset="1798"/>
+</LocList>
+<BasicStmnt CovItemId="S27" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="106">
+<LocList>
+<Loc EndOffset="1808" SrcFileId="2" StartOffset="1798"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B6" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Implct="true" Intrnl_Id="107">
+<Cond/>
+<LocList/>
+<StmntSeq Intrnl_Id="108">
+<LocList/>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="1763" SrcFileId="2" StartOffset="1761"/>
+<LocList>
+<Loc EndOffset="1808" SrcFileId="2" StartOffset="1761"/>
+</LocList>
+<RootTerm CovItemId="C6" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="109">
+<BasicBoolTerm Intrnl_Id="110">
+<LocList>
+<Loc EndOffset="1791" SrcFileId="2" StartOffset="1764"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+<Keyword EndOffset="1726" SrcFileId="2" StartOffset="1723"/>
+<LocList>
+<Loc EndOffset="1813" SrcFileId="2" StartOffset="1723"/>
+</LocList>
+<RootTerm CovItemId="C5" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="111">
+<BasicBoolTerm Intrnl_Id="112">
+<LocList>
+<Loc EndOffset="1749" SrcFileId="2" StartOffset="1736"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</LoopStmnt>
+<BasicStmnt CovItemId="S28" CovItemPrefix="com.mloftus.mastermind.MastermindLogic.java" Intrnl_Id="113">
+<LocList>
+<Loc EndOffset="1832" SrcFileId="2" StartOffset="1817"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="328" HierarchyLvlTypeId="9" Intrnl_Id="114" Name="MastermindGuessValidator">
+<Header>
+<Loc EndOffset="72" SrcFileId="3" StartOffset="35"/>
+</Header>
+<LocList>
+<Loc EndOffset="1096" SrcFileId="3" StartOffset="35"/>
+</LocList>
+<HierarchyLvl HierarchyLvlId="323" HierarchyLvlTypeId="8" Intrnl_Id="115" Name="MastermindGuessValidator">
+<Header>
+<Loc EndOffset="155" SrcFileId="3" StartOffset="108"/>
+</Header>
+<LocList>
+<Loc EndOffset="194" SrcFileId="3" StartOffset="108"/>
+</LocList>
+<StmntSeq Intrnl_Id="116">
+<LocList>
+<Loc EndOffset="190" SrcFileId="3" StartOffset="161"/>
+</LocList>
+<BasicStmnt CovItemId="S1" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="117">
+<LocList>
+<Loc EndOffset="190" SrcFileId="3" StartOffset="161"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="324" HierarchyLvlTypeId="8" Intrnl_Id="118" Name="guessIsValid">
+<Header>
+<Loc EndOffset="240" SrcFileId="3" StartOffset="199"/>
+</Header>
+<LocList>
+<Loc EndOffset="340" SrcFileId="3" StartOffset="199"/>
+</LocList>
+<StmntSeq Intrnl_Id="119">
+<LocList>
+<Loc EndOffset="336" SrcFileId="3" StartOffset="246"/>
+</LocList>
+<BasicStmnt CovItemId="S2" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="120">
+<LocList>
+<Loc EndOffset="336" SrcFileId="3" StartOffset="246"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="325" HierarchyLvlTypeId="8" Intrnl_Id="121" Name="lengthIsCorrect">
+<Header>
+<Loc EndOffset="406" SrcFileId="3" StartOffset="345"/>
+</Header>
+<LocList>
+<Loc EndOffset="452" SrcFileId="3" StartOffset="345"/>
+</LocList>
+<StmntSeq Intrnl_Id="122">
+<LocList>
+<Loc EndOffset="448" SrcFileId="3" StartOffset="412"/>
+</LocList>
+<BasicStmnt CovItemId="S3" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="123">
+<LocList>
+<Loc EndOffset="448" SrcFileId="3" StartOffset="412"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="326" HierarchyLvlTypeId="8" Intrnl_Id="124" Name="isNumeric">
+<Header>
+<Loc EndOffset="496" SrcFileId="3" StartOffset="457"/>
+</Header>
+<LocList>
+<Loc EndOffset="729" SrcFileId="3" StartOffset="457"/>
+</LocList>
+<StmntSeq Intrnl_Id="125">
+<LocList>
+<Loc EndOffset="542" SrcFileId="3" StartOffset="502"/>
+<Loc EndOffset="709" SrcFileId="3" StartOffset="546"/>
+<Loc EndOffset="725" SrcFileId="3" StartOffset="713"/>
+</LocList>
+<BasicStmnt CovItemId="S4" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="126">
+<LocList>
+<Loc EndOffset="542" SrcFileId="3" StartOffset="502"/>
+</LocList>
+</BasicStmnt>
+<LoopStmnt CovItemId="S5" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="127" MltplExecId="L1-2" MltplExecPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" NvrExecId="L1-0" NvrExecPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" OnceExecutedId="L1-1" OnceExecutedPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="128">
+<LocList>
+<Loc EndOffset="639" SrcFileId="3" StartOffset="595"/>
+<Loc EndOffset="704" SrcFileId="3" StartOffset="584"/>
+</LocList>
+<BasicStmnt CovItemId="S7" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="129">
+<LocList>
+<Loc EndOffset="639" SrcFileId="3" StartOffset="595"/>
+</LocList>
+</BasicStmnt>
+<CondStmnt CovItemId="S6" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="130">
+<Branch CovItemId="B1" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Implct="true" Intrnl_Id="131">
+<Cond/>
+<LocList/>
+<StmntSeq Intrnl_Id="132">
+<LocList/>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B2" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Implct="false" Intrnl_Id="133">
+<Cond>
+<Loc EndOffset="677" SrcFileId="3" StartOffset="646"/>
+</Cond>
+<LocList>
+<Loc EndOffset="704" SrcFileId="3" StartOffset="678"/>
+</LocList>
+<StmntSeq Intrnl_Id="134">
+<LocList>
+<Loc EndOffset="698" SrcFileId="3" StartOffset="685"/>
+</LocList>
+<BasicStmnt CovItemId="S8" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="135">
+<LocList>
+<Loc EndOffset="698" SrcFileId="3" StartOffset="685"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="587" SrcFileId="3" StartOffset="584"/>
+<LocList>
+<Loc EndOffset="704" SrcFileId="3" StartOffset="584"/>
+</LocList>
+</CondStmnt>
+</StmntSeq>
+<Keyword EndOffset="549" SrcFileId="3" StartOffset="546"/>
+<LocList>
+<Loc EndOffset="709" SrcFileId="3" StartOffset="546"/>
+</LocList>
+</LoopStmnt>
+<BasicStmnt CovItemId="S9" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="136">
+<LocList>
+<Loc EndOffset="725" SrcFileId="3" StartOffset="713"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="327" HierarchyLvlTypeId="8" Intrnl_Id="137" Name="hasNoRepeatDigits">
+<Header>
+<Loc EndOffset="781" SrcFileId="3" StartOffset="734"/>
+</Header>
+<LocList>
+<Loc EndOffset="1091" SrcFileId="3" StartOffset="734"/>
+</LocList>
+<StmntSeq Intrnl_Id="138">
+<LocList>
+<Loc EndOffset="829" SrcFileId="3" StartOffset="787"/>
+<Loc EndOffset="880" SrcFileId="3" StartOffset="833"/>
+<Loc EndOffset="1071" SrcFileId="3" StartOffset="884"/>
+<Loc EndOffset="1087" SrcFileId="3" StartOffset="1075"/>
+</LocList>
+<BasicStmnt CovItemId="S10" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="139">
+<LocList>
+<Loc EndOffset="829" SrcFileId="3" StartOffset="787"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S11" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="140">
+<LocList>
+<Loc EndOffset="880" SrcFileId="3" StartOffset="833"/>
+</LocList>
+</BasicStmnt>
+<LoopStmnt CovItemId="S12" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="141" MltplExecId="L2-2" MltplExecPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" NvrExecId="L2-0" NvrExecPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" OnceExecutedId="L2-1" OnceExecutedPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="142">
+<LocList>
+<Loc EndOffset="1027" SrcFileId="3" StartOffset="929"/>
+<Loc EndOffset="1066" SrcFileId="3" StartOffset="1032"/>
+</LocList>
+<LoopStmnt CovItemId="S13" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="143" MltplExecId="L3-2" MltplExecPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" NvrExecId="L3-0" NvrExecPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" OnceExecutedId="L3-1" OnceExecutedPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="144">
+<LocList>
+<Loc EndOffset="1021" SrcFileId="3" StartOffset="970"/>
+</LocList>
+<CondStmnt CovItemId="S14" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="145">
+<Branch CovItemId="B3" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Implct="false" Intrnl_Id="146">
+<Cond/>
+<LocList>
+<Loc EndOffset="1021" SrcFileId="3" StartOffset="1008"/>
+</LocList>
+<StmntSeq Intrnl_Id="147">
+<LocList>
+<Loc EndOffset="1021" SrcFileId="3" StartOffset="1008"/>
+</LocList>
+<BasicStmnt CovItemId="S15" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="148">
+<LocList>
+<Loc EndOffset="1021" SrcFileId="3" StartOffset="1008"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B4" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Implct="true" Intrnl_Id="149">
+<Cond/>
+<LocList/>
+<StmntSeq Intrnl_Id="150">
+<LocList/>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="972" SrcFileId="3" StartOffset="970"/>
+<LocList>
+<Loc EndOffset="1021" SrcFileId="3" StartOffset="970"/>
+</LocList>
+<RootTerm CovItemId="C2" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="151">
+<BasicBoolTerm Intrnl_Id="152">
+<LocList>
+<Loc EndOffset="1000" SrcFileId="3" StartOffset="974"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+<Keyword EndOffset="932" SrcFileId="3" StartOffset="929"/>
+<LocList>
+<Loc EndOffset="1027" SrcFileId="3" StartOffset="929"/>
+</LocList>
+</LoopStmnt>
+<BasicStmnt CovItemId="S16" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="153">
+<LocList>
+<Loc EndOffset="1066" SrcFileId="3" StartOffset="1032"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+<Keyword EndOffset="887" SrcFileId="3" StartOffset="884"/>
+<LocList>
+<Loc EndOffset="1071" SrcFileId="3" StartOffset="884"/>
+</LocList>
+<RootTerm CovItemId="C1" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="154">
+<BasicBoolTerm Intrnl_Id="155">
+<LocList>
+<Loc EndOffset="918" SrcFileId="3" StartOffset="897"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</LoopStmnt>
+<BasicStmnt CovItemId="S17" CovItemPrefix="com.mloftus.mastermind.MastermindGuessValidator.java" Intrnl_Id="156">
+<LocList>
+<Loc EndOffset="1087" SrcFileId="3" StartOffset="1075"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="339" HierarchyLvlTypeId="9" Intrnl_Id="157" Name="MastermindGame">
+<Header>
+<Loc EndOffset="207" SrcFileId="4" StartOffset="180"/>
+</Header>
+<LocList>
+<Loc EndOffset="2262" SrcFileId="4" StartOffset="180"/>
+</LocList>
+<StmntSeq Intrnl_Id="158">
+<LocList>
+<Loc EndOffset="245" SrcFileId="4" StartOffset="214"/>
+<Loc EndOffset="280" SrcFileId="4" StartOffset="248"/>
+<Loc EndOffset="351" SrcFileId="4" StartOffset="315"/>
+</LocList>
+<BasicStmnt CovItemId="S1" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="159">
+<LocList>
+<Loc EndOffset="245" SrcFileId="4" StartOffset="214"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S2" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="160">
+<LocList>
+<Loc EndOffset="280" SrcFileId="4" StartOffset="248"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S3" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="161">
+<LocList>
+<Loc EndOffset="351" SrcFileId="4" StartOffset="315"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+<HierarchyLvl HierarchyLvlId="329" HierarchyLvlTypeId="8" Intrnl_Id="162" Name="MastermindGame">
+<Header>
+<Loc EndOffset="433" SrcFileId="4" StartOffset="396"/>
+</Header>
+<LocList>
+<Loc EndOffset="472" SrcFileId="4" StartOffset="396"/>
+</LocList>
+<StmntSeq Intrnl_Id="163">
+<LocList>
+<Loc EndOffset="468" SrcFileId="4" StartOffset="439"/>
+</LocList>
+<BasicStmnt CovItemId="S4" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="164">
+<LocList>
+<Loc EndOffset="468" SrcFileId="4" StartOffset="439"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="330" HierarchyLvlTypeId="8" Intrnl_Id="165" Name="play">
+<Header>
+<Loc EndOffset="525" SrcFileId="4" StartOffset="477"/>
+</Header>
+<LocList>
+<Loc EndOffset="1153" SrcFileId="4" StartOffset="477"/>
+</LocList>
+<StmntSeq Intrnl_Id="166">
+<LocList>
+<Loc EndOffset="549" SrcFileId="4" StartOffset="533"/>
+<Loc EndOffset="610" SrcFileId="4" StartOffset="557"/>
+<Loc EndOffset="1061" SrcFileId="4" StartOffset="618"/>
+<Loc EndOffset="1147" SrcFileId="4" StartOffset="1065"/>
+</LocList>
+<BasicStmnt CovItemId="S5" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="167">
+<LocList>
+<Loc EndOffset="549" SrcFileId="4" StartOffset="533"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S6" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="168">
+<LocList>
+<Loc EndOffset="610" SrcFileId="4" StartOffset="557"/>
+</LocList>
+</BasicStmnt>
+<LoopStmnt CovItemId="S7" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="169" MltplExecId="L1-2" MltplExecPrefix="com.mloftus.mastermind.MastermindGame.java" NvrExecId="L1-0" NvrExecPrefix="com.mloftus.mastermind.MastermindGame.java" OnceExecutedId="L1-1" OnceExecutedPrefix="com.mloftus.mastermind.MastermindGame.java" OptBodyExec="true">
+<StmntSeq Intrnl_Id="170">
+<LocList>
+<Loc EndOffset="670" SrcFileId="4" StartOffset="652"/>
+<Loc EndOffset="701" SrcFileId="4" StartOffset="675"/>
+<Loc EndOffset="805" SrcFileId="4" StartOffset="706"/>
+<Loc EndOffset="828" SrcFileId="4" StartOffset="810"/>
+<Loc EndOffset="1054" SrcFileId="4" StartOffset="833"/>
+</LocList>
+<BasicStmnt CovItemId="S8" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="171">
+<LocList>
+<Loc EndOffset="670" SrcFileId="4" StartOffset="652"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S9" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="172">
+<LocList>
+<Loc EndOffset="701" SrcFileId="4" StartOffset="675"/>
+</LocList>
+</BasicStmnt>
+<CondStmnt CovItemId="S10" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="173">
+<Branch CovItemId="B1" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="false" Intrnl_Id="174">
+<Cond/>
+<LocList>
+<Loc EndOffset="805" SrcFileId="4" StartOffset="732"/>
+</LocList>
+<StmntSeq Intrnl_Id="175">
+<LocList>
+<Loc EndOffset="784" SrcFileId="4" StartOffset="739"/>
+<Loc EndOffset="799" SrcFileId="4" StartOffset="790"/>
+</LocList>
+<BasicStmnt CovItemId="S11" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="176">
+<LocList>
+<Loc EndOffset="784" SrcFileId="4" StartOffset="739"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S12" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="177">
+<LocList>
+<Loc EndOffset="799" SrcFileId="4" StartOffset="790"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B2" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="true" Intrnl_Id="178">
+<Cond/>
+<LocList/>
+<StmntSeq Intrnl_Id="179">
+<LocList/>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="708" SrcFileId="4" StartOffset="706"/>
+<LocList>
+<Loc EndOffset="805" SrcFileId="4" StartOffset="706"/>
+</LocList>
+<RootTerm CovItemId="C2" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="180">
+<BasicBoolTerm Intrnl_Id="181">
+<LocList>
+<Loc EndOffset="730" SrcFileId="4" StartOffset="710"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+<BasicStmnt CovItemId="S13" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="182">
+<LocList>
+<Loc EndOffset="828" SrcFileId="4" StartOffset="810"/>
+</LocList>
+</BasicStmnt>
+<CondStmnt CovItemId="S14" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="183">
+<Branch CovItemId="B3" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="false" Intrnl_Id="184">
+<Cond/>
+<LocList>
+<Loc EndOffset="949" SrcFileId="4" StartOffset="860"/>
+</LocList>
+<StmntSeq Intrnl_Id="185">
+<LocList>
+<Loc EndOffset="931" SrcFileId="4" StartOffset="867"/>
+<Loc EndOffset="943" SrcFileId="4" StartOffset="937"/>
+</LocList>
+<BasicStmnt CovItemId="S15" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="186">
+<LocList>
+<Loc EndOffset="931" SrcFileId="4" StartOffset="867"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S16" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="187">
+<LocList>
+<Loc EndOffset="943" SrcFileId="4" StartOffset="937"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B4" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="false" Intrnl_Id="188">
+<Cond>
+<Loc EndOffset="954" SrcFileId="4" StartOffset="950"/>
+</Cond>
+<LocList>
+<Loc EndOffset="1054" SrcFileId="4" StartOffset="955"/>
+</LocList>
+<StmntSeq Intrnl_Id="189">
+<LocList>
+<Loc EndOffset="1048" SrcFileId="4" StartOffset="962"/>
+</LocList>
+<BasicStmnt CovItemId="S17" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="190">
+<LocList>
+<Loc EndOffset="1048" SrcFileId="4" StartOffset="962"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="835" SrcFileId="4" StartOffset="833"/>
+<LocList>
+<Loc EndOffset="1054" SrcFileId="4" StartOffset="833"/>
+</LocList>
+<RootTerm CovItemId="C3" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="191">
+<BasicBoolTerm Intrnl_Id="192">
+<LocList>
+<Loc EndOffset="858" SrcFileId="4" StartOffset="837"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+<Keyword EndOffset="623" SrcFileId="4" StartOffset="618"/>
+<LocList>
+<Loc EndOffset="1061" SrcFileId="4" StartOffset="618"/>
+</LocList>
+<RootTerm CovItemId="C1" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="193">
+<BasicBoolTerm Intrnl_Id="194">
+<LocList>
+<Loc EndOffset="644" SrcFileId="4" StartOffset="625"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</LoopStmnt>
+<CondStmnt CovItemId="S18" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="195">
+<Branch CovItemId="B5" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="false" Intrnl_Id="196">
+<Cond/>
+<LocList>
+<Loc EndOffset="1147" SrcFileId="4" StartOffset="1088"/>
+</LocList>
+<StmntSeq Intrnl_Id="197">
+<LocList>
+<Loc EndOffset="1142" SrcFileId="4" StartOffset="1094"/>
+</LocList>
+<BasicStmnt CovItemId="S19" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="198">
+<LocList>
+<Loc EndOffset="1142" SrcFileId="4" StartOffset="1094"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B6" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="true" Intrnl_Id="199">
+<Cond/>
+<LocList/>
+<StmntSeq Intrnl_Id="200">
+<LocList/>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="1067" SrcFileId="4" StartOffset="1065"/>
+<LocList>
+<Loc EndOffset="1147" SrcFileId="4" StartOffset="1065"/>
+</LocList>
+<RootTerm CovItemId="C4" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="201">
+<BasicBoolTerm Intrnl_Id="202">
+<LocList>
+<Loc EndOffset="1086" SrcFileId="4" StartOffset="1069"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="331" HierarchyLvlTypeId="8" Intrnl_Id="203" Name="configureGame">
+<Header>
+<Loc EndOffset="1216" SrcFileId="4" StartOffset="1158"/>
+</Header>
+<LocList>
+<Loc EndOffset="1428" SrcFileId="4" StartOffset="1158"/>
+</LocList>
+<StmntSeq Intrnl_Id="204">
+<LocList>
+<Loc EndOffset="1330" SrcFileId="4" StartOffset="1222"/>
+<Loc EndOffset="1381" SrcFileId="4" StartOffset="1334"/>
+<Loc EndOffset="1424" SrcFileId="4" StartOffset="1385"/>
+</LocList>
+<CondStmnt CovItemId="S20" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="205">
+<Branch CovItemId="B7" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="false" Intrnl_Id="206">
+<Cond/>
+<LocList>
+<Loc EndOffset="1330" SrcFileId="4" StartOffset="1260"/>
+</LocList>
+<StmntSeq Intrnl_Id="207">
+<LocList>
+<Loc EndOffset="1325" SrcFileId="4" StartOffset="1266"/>
+</LocList>
+<BasicStmnt CovItemId="S21" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="208">
+<LocList>
+<Loc EndOffset="1325" SrcFileId="4" StartOffset="1266"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B8" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="true" Intrnl_Id="209">
+<Cond/>
+<LocList/>
+<StmntSeq Intrnl_Id="210">
+<LocList/>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="1224" SrcFileId="4" StartOffset="1222"/>
+<LocList>
+<Loc EndOffset="1330" SrcFileId="4" StartOffset="1222"/>
+</LocList>
+<RootTerm CovItemId="C5" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="211">
+<OpTerm BooleanOpId="5" Intrnl_Id="212">
+<BasicBoolTerm Intrnl_Id="213">
+<LocList>
+<Loc EndOffset="1240" SrcFileId="4" StartOffset="1226"/>
+</LocList>
+</BasicBoolTerm>
+<BasicBoolTerm Intrnl_Id="214">
+<LocList>
+<Loc EndOffset="1258" SrcFileId="4" StartOffset="1244"/>
+</LocList>
+</BasicBoolTerm>
+<LocList>
+<Loc EndOffset="1243" SrcFileId="4" StartOffset="1241"/>
+</LocList>
+</OpTerm>
+</RootTerm>
+</CondStmnt>
+<CondStmnt CovItemId="S22" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="215">
+<Branch CovItemId="B9" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="false" Intrnl_Id="216">
+<Cond/>
+<LocList>
+<Loc EndOffset="1381" SrcFileId="4" StartOffset="1354"/>
+</LocList>
+<StmntSeq Intrnl_Id="217">
+<LocList>
+<Loc EndOffset="1376" SrcFileId="4" StartOffset="1360"/>
+</LocList>
+<BasicStmnt CovItemId="S23" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="218">
+<LocList>
+<Loc EndOffset="1376" SrcFileId="4" StartOffset="1360"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B10" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="true" Intrnl_Id="219">
+<Cond/>
+<LocList/>
+<StmntSeq Intrnl_Id="220">
+<LocList/>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="1336" SrcFileId="4" StartOffset="1334"/>
+<LocList>
+<Loc EndOffset="1381" SrcFileId="4" StartOffset="1334"/>
+</LocList>
+<RootTerm CovItemId="C6" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="221">
+<BasicBoolTerm Intrnl_Id="222">
+<LocList>
+<Loc EndOffset="1352" SrcFileId="4" StartOffset="1338"/>
+</LocList>
+</BasicBoolTerm>
+</RootTerm>
+</CondStmnt>
+<BasicStmnt CovItemId="S24" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="223">
+<LocList>
+<Loc EndOffset="1424" SrcFileId="4" StartOffset="1385"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="332" HierarchyLvlTypeId="8" Intrnl_Id="224" Name="someGuessesRemain">
+<Header>
+<Loc EndOffset="1469" SrcFileId="4" StartOffset="1434"/>
+</Header>
+<LocList>
+<Loc EndOffset="1516" SrcFileId="4" StartOffset="1434"/>
+</LocList>
+<StmntSeq Intrnl_Id="225">
+<LocList>
+<Loc EndOffset="1512" SrcFileId="4" StartOffset="1475"/>
+</LocList>
+<BasicStmnt CovItemId="S25" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="226">
+<LocList>
+<Loc EndOffset="1512" SrcFileId="4" StartOffset="1475"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="333" HierarchyLvlTypeId="8" Intrnl_Id="227" Name="askForNextGuess">
+<Header>
+<Loc EndOffset="1551" SrcFileId="4" StartOffset="1521"/>
+</Header>
+<LocList>
+<Loc EndOffset="1651" SrcFileId="4" StartOffset="1521"/>
+</LocList>
+<StmntSeq Intrnl_Id="228">
+<LocList>
+<Loc EndOffset="1647" SrcFileId="4" StartOffset="1557"/>
+</LocList>
+<BasicStmnt CovItemId="S26" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="229">
+<LocList>
+<Loc EndOffset="1647" SrcFileId="4" StartOffset="1557"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="334" HierarchyLvlTypeId="8" Intrnl_Id="230" Name="getGuess">
+<Header>
+<Loc EndOffset="1681" SrcFileId="4" StartOffset="1656"/>
+</Header>
+<LocList>
+<Loc EndOffset="1900" SrcFileId="4" StartOffset="1656"/>
+</LocList>
+<StmntSeq Intrnl_Id="231">
+<LocList>
+<Loc EndOffset="1760" SrcFileId="4" StartOffset="1687"/>
+<Loc EndOffset="1784" SrcFileId="4" StartOffset="1764"/>
+<Loc EndOffset="1820" SrcFileId="4" StartOffset="1798"/>
+<Loc EndOffset="1879" SrcFileId="4" StartOffset="1788"/>
+<Loc EndOffset="1896" SrcFileId="4" StartOffset="1883"/>
+</LocList>
+<BasicStmnt CovItemId="S27" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="232">
+<LocList>
+<Loc EndOffset="1760" SrcFileId="4" StartOffset="1687"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S28" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="233">
+<LocList>
+<Loc EndOffset="1784" SrcFileId="4" StartOffset="1764"/>
+</LocList>
+</BasicStmnt>
+<BasicStmnt CovItemId="S30" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="234">
+<LocList>
+<Loc EndOffset="1820" SrcFileId="4" StartOffset="1798"/>
+</LocList>
+</BasicStmnt>
+<CondStmnt CovItemId="S29" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="235">
+<Branch CovItemId="B11" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="true" Intrnl_Id="236">
+<Cond/>
+<LocList/>
+<StmntSeq Intrnl_Id="237">
+<LocList/>
+</StmntSeq>
+</Branch>
+<Branch CovItemId="B12" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Implct="false" Intrnl_Id="238">
+<Cond>
+<Loc EndOffset="1847" SrcFileId="4" StartOffset="1826"/>
+</Cond>
+<LocList>
+<Loc EndOffset="1879" SrcFileId="4" StartOffset="1848"/>
+</LocList>
+<StmntSeq Intrnl_Id="239">
+<LocList>
+<Loc EndOffset="1874" SrcFileId="4" StartOffset="1854"/>
+</LocList>
+<BasicStmnt CovItemId="S31" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="240">
+<LocList>
+<Loc EndOffset="1874" SrcFileId="4" StartOffset="1854"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</Branch>
+<Keyword EndOffset="1791" SrcFileId="4" StartOffset="1788"/>
+<LocList>
+<Loc EndOffset="1879" SrcFileId="4" StartOffset="1788"/>
+</LocList>
+</CondStmnt>
+<BasicStmnt CovItemId="S32" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="241">
+<LocList>
+<Loc EndOffset="1896" SrcFileId="4" StartOffset="1883"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="335" HierarchyLvlTypeId="8" Intrnl_Id="242" Name="guessNotValid">
+<Header>
+<Loc EndOffset="1949" SrcFileId="4" StartOffset="1906"/>
+</Header>
+<LocList>
+<Loc EndOffset="1993" SrcFileId="4" StartOffset="1906"/>
+</LocList>
+<StmntSeq Intrnl_Id="243">
+<LocList>
+<Loc EndOffset="1989" SrcFileId="4" StartOffset="1955"/>
+</LocList>
+<BasicStmnt CovItemId="S33" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="244">
+<LocList>
+<Loc EndOffset="1989" SrcFileId="4" StartOffset="1955"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="336" HierarchyLvlTypeId="8" Intrnl_Id="245" Name="isWinningGuess">
+<Header>
+<Loc EndOffset="2042" SrcFileId="4" StartOffset="1998"/>
+</Header>
+<LocList>
+<Loc EndOffset="2088" SrcFileId="4" StartOffset="1998"/>
+</LocList>
+<StmntSeq Intrnl_Id="246">
+<LocList>
+<Loc EndOffset="2084" SrcFileId="4" StartOffset="2048"/>
+</LocList>
+<BasicStmnt CovItemId="S34" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="247">
+<LocList>
+<Loc EndOffset="2084" SrcFileId="4" StartOffset="2048"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="337" HierarchyLvlTypeId="8" Intrnl_Id="248" Name="ranOutOfGuesses">
+<Header>
+<Loc EndOffset="2126" SrcFileId="4" StartOffset="2093"/>
+</Header>
+<LocList>
+<Loc EndOffset="2165" SrcFileId="4" StartOffset="2093"/>
+</LocList>
+<StmntSeq Intrnl_Id="249">
+<LocList>
+<Loc EndOffset="2161" SrcFileId="4" StartOffset="2132"/>
+</LocList>
+<BasicStmnt CovItemId="S35" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="250">
+<LocList>
+<Loc EndOffset="2161" SrcFileId="4" StartOffset="2132"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+<HierarchyLvl HierarchyLvlId="338" HierarchyLvlTypeId="8" Intrnl_Id="251" Name="printUsageMessage">
+<Header>
+<Loc EndOffset="2208" SrcFileId="4" StartOffset="2170"/>
+</Header>
+<LocList>
+<Loc EndOffset="2257" SrcFileId="4" StartOffset="2170"/>
+</LocList>
+<StmntSeq Intrnl_Id="252">
+<LocList>
+<Loc EndOffset="2253" SrcFileId="4" StartOffset="2214"/>
+</LocList>
+<BasicStmnt CovItemId="S36" CovItemPrefix="com.mloftus.mastermind.MastermindGame.java" Intrnl_Id="253">
+<LocList>
+<Loc EndOffset="2253" SrcFileId="4" StartOffset="2214"/>
+</LocList>
+</BasicStmnt>
+</StmntSeq>
+</HierarchyLvl>
+</HierarchyLvl>
+</HierarchyLvl>
+</HierarchyLvl>
+</HierarchyLvl>
+</HierarchyLvl>
+</MASTRoot>
+</TestSessionContainer>
